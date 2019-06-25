@@ -42,7 +42,7 @@ class SongsController extends AbstractFOSRestController
      *     })
      * @IsGranted("ROLE_SUPER_ADMIN")
      */
-    public function postSongs(Song $song, ConstraintViolationList $violations)
+    public function postSong(Song $song, ConstraintViolationList $violations)
     {
         if (count($violations)) {
             return $this->view($violations, Response::HTTP_BAD_REQUEST);
