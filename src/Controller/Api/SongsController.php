@@ -9,6 +9,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use App\Entity\Song;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 /**
  * Movie controller.
@@ -34,11 +35,19 @@ class SongsController extends AbstractFOSRestController
      * Lists all songs.
      * @Rest\View(statusCode=Response::HTTP_CREATED)
      * @Rest\Post("/songs", name="_post_songs")
-     * @ParamConverter("song", converter="fos_rest.request_body")
+     * @ParamConverter("song",
+     *     converter="fos_rest.request_body",
+     *     options={
+     *         "validator"={ "groups"="Create" }
+     *     })
      * @IsGranted("ROLE_SUPER_ADMIN")
      */
-    public function postSongs(Song $song)
+    public function postSongs(Song $song, ConstraintViolationList $violations)
     {
+        if (count($violations)) {
+            return $this->view($violations, Response::HTTP_BAD_REQUEST);
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         $em->persist($song);
